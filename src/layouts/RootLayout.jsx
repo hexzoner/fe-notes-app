@@ -1,14 +1,37 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import ThemesSwap from "@/components/ThemesSwap";
 
 const RootLayout = () => {
   const [audioRef, setAudioRef] = useState(document.getElementById("audio"));
+  const aRef = useRef(null);
+
   useEffect(() => {
-    if (!audioRef) setAudioRef(document.getElementById("audio"));
-    // console.log(audioRef);
+    if (!audioRef) {
+      setAudioRef(document.getElementById("audio"));
+    }
+
+    // const handleEnded = () => {
+    //   console.log("Audio has ended");
+    //   // Add any additional logic you need when the audio ends
+    // };
+
+    // const handlePause = () => {
+    //   console.log("Audio has paused");
+    //   // Add any additional logic you need when the audio pauses
+    // };
+    // if (aRef.current) {
+    //   aRef.current.addEventListener("ended", handleEnded);
+    //   aRef.current.addEventListener("pause", handlePause);
+
+    //   // Clean up event listeners on component unmount
+    //   return () => {
+    //     aRef.current.removeEventListener("ended", handleEnded);
+    //     aRef.current.removeEventListener("pause", handlePause);
+    //   };
+    // }
   }, []);
 
   return (
@@ -19,7 +42,14 @@ const RootLayout = () => {
           <div className="flex-1">
             <a className="btn btn-ghost text-xl">Notes app</a>
             <ThemesSwap />
-            {<audio id="audio" controls={true} className="scale-90"></audio>}
+            <audio
+              ref={aRef}
+              id="audio"
+              onPlay={() => {}}
+              onEnded={() => console.log("Ended")}
+              onPause={() => {}}
+              controls={true}
+              className={`scale-90 ${audioRef && audioRef.paused && false ? "opacity-0" : "opacity-100"}`}></audio>
           </div>
           <div className="flex-none">
             <ul className="flex gap-2 px-1">
