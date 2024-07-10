@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
 import { Charts } from "@/components/Diary";
 import ReactMarkdown from "react-markdown";
+import { useOutletContext } from "react-router-dom";
 
 const chatUrl = `https://gen-ai-wbs-consumer-api.onrender.com/api/v1/chat/completions`;
 const AI_MODE = "production";
 
 const MoodAIAnalysis = ({ entries }) => {
+  const { loading, setLoading } = useOutletContext();
   const [results, setResults] = useState("");
   const [chartsData, setChartsData] = useState([]);
   const entriesPacked = entries.map((x) => {
@@ -26,6 +28,7 @@ const MoodAIAnalysis = ({ entries }) => {
 
   const handleAISummary = async () => {
     try {
+      setLoading(true);
       const res = await fetch(chatUrl, {
         method: "POST",
         headers: {
@@ -49,6 +52,7 @@ const MoodAIAnalysis = ({ entries }) => {
     } catch (error) {
       console.log(error);
     } finally {
+      setLoading(false);
     }
   };
 
@@ -59,25 +63,34 @@ const MoodAIAnalysis = ({ entries }) => {
           ✨
         </button>
       </div>
+
       <dialog id="modal-note" className="modal" ref={modalRef}>
         <div className="modal-box h-[600px] py-0 w-full max-w-6xl">
-          <div className="modal-action items-center justify-between mb-2">
-            <h1 className="text-2xl text-center">Get your AI Gen Mood Analysis</h1>
-            <form method="dialog">
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6">✕</button>
-            </form>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="textarea textarea-primary w-1/2 h-[450px] overflow-y-scroll rounded-md">{results.length === 0 ? "AI SUMMARY GOES HERE..." : <ReactMarkdown>{results}</ReactMarkdown>}</div>
-            <div className="textarea textarea-secondary w-1/2 h-[450px] overflow-y-scroll rounded-md">
-              <Charts aiSummary={chartsData} />
+          {loading ? (
+            <span className="loading loading-dots loading-lg absolute top-1/2 right-1/2"></span>
+          ) : (
+            <div>
+              <div className="modal-action items-center justify-between mb-2">
+                <h1 className="text-2xl text-center">Get your AI Gen Mood Analysis</h1>
+                <form method="dialog">
+                  <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6">✕</button>
+                </form>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="textarea textarea-primary w-1/2 h-[450px] overflow-y-scroll rounded-md">
+                  {results.length === 0 ? "AI SUMMARY GOES HERE..." : <ReactMarkdown>{results}</ReactMarkdown>}
+                </div>
+                <div className="textarea textarea-secondary w-1/2 h-[450px] overflow-y-scroll rounded-md">
+                  <Charts aiSummary={chartsData} />
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <button className="mt-5 btn bg-purple-500 hover:bg-purple-400 text-white" onClick={handleAISummary}>
+                  Gen AI mood analysis ✨
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="flex justify-center">
-            <button className="mt-5 btn bg-purple-500 hover:bg-purple-400 text-white" onClick={handleAISummary}>
-              Gen AI mood analysis ✨
-            </button>
-          </div>
+          )}
         </div>
       </dialog>
     </>

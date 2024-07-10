@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ThemesSwap from "@/components/ThemesSwap";
 
 const RootLayout = () => {
+  const [loading, setLoading] = useState(false);
   const [audioRef, setAudioRef] = useState(document.getElementById("audio"));
   const aRef = useRef(null);
 
@@ -73,7 +74,7 @@ const RootLayout = () => {
           </div>
         </div>
       </div>
-      <Outlet context={{ audioRef }} />
+      <Outlet context={{ audioRef, loading, setLoading }} />
     </>
   );
 };
