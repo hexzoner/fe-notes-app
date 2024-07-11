@@ -50,7 +50,7 @@ const MoodAIAnalysis = ({ entries }) => {
       // console.log(data.message.content);
       const parsed = JSON.parse(data.message.content);
       setResults(parsed.summary);
-      console.log(parsed);
+      // console.log(parsed);
       setChartsData(parsed.charts);
     } catch (error) {
       console.log(error);
