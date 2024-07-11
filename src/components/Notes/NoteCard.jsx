@@ -1,8 +1,13 @@
 import textToSpeech from "../TextToSpeech";
 import { useOutletContext } from "react-router-dom";
+import generateImageAI from "../GenerateImage";
+import { useState } from "react";
+import axios from "axios";
 
 const NoteCard = ({ note, setForm, openForm }) => {
-  const { audioRef } = useOutletContext();
+  const { audioRef, generatingImage, setGeneratingImage } = useOutletContext();
+  const [image, setImage] = useState(note.image);
+  const [generatingLocal, setGeneratingLocal] = useState(false);
 
   function handleEdit(e) {
     setForm(note);
@@ -10,20 +15,54 @@ const NoteCard = ({ note, setForm, openForm }) => {
   }
 
   function handlePlay() {
-    // if (ref) ref.src = "";
     if (audioRef) audioRef.pause();
-    textToSpeech(note.title + ". " + note.content, audioRef);
+    textToSpeech("Title: " + note.title + ". Author: " + note.author + ". Content:" + note.content, audioRef);
+  }
+
+  async function handleImage() {
+    const res = await generateImageAI(note.title + ". " + note.content, setImage, setGeneratingImage, setGeneratingLocal);
+    if (res) {
+      const { data } = await axios.put(`${import.meta.env.VITE_NOTES_API}/notes/${note._id}`, {
+        title: note.title,
+        author: note.author,
+        image: res,
+        content: note.content,
+      });
+    }
   }
 
   return (
     <div className="card bg-base-100 shadow-xl">
-      <figure className="bg-white h-48">
-        <img src={note.image} alt={note.title} className="object-cover h-full w-full" />
-      </figure>
-      <div className="bg-black pl-1 absolute flex right-0 w-[64px] h-[32px] bg-opacity-40 rounded-tr-[15px]  rounded-bl-[8px]">
+      {generatingLocal ? (
+        <figure className="bg-base-100 h-48">
+          <span className=" bg-current loading loading-dots loading-lg absolute "></span>
+        </figure>
+      ) : (
+        <figure className="bg-white h-48">
+          <img src={image} alt={note.title} className="object-cover h-full w-full" />
+        </figure>
+      )}
+
+      <div className="bg-black pl-1 absolute flex gap-1 right-0 w-[96px] h-[32px] bg-opacity-50 rounded-tr-[15px]  rounded-bl-[8px]">
+        {!generatingImage ? (
+          <svg
+            onClick={handleImage}
+            className="stroke-white pt-[2px] fill-transparent stroke-[3px] hover:stroke-green-400 hover:cursor-pointer"
+            width="28px"
+            height="28px"
+            viewBox="0 0 64 64"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 44h8c8 0 16-8 24-8s8 8 16 8" />
+            <rect x="8" y="8" width="48" height="48" />
+            <circle cx="22" cy="22" r="6" />
+          </svg>
+        ) : (
+          <span className="loading loading-spinner loading-sm text-white"></span>
+        )}
+
         <svg
           onClick={handlePlay}
-          className={`relative  stroke-white fill-transparent stroke-1 hover:fill-base-100 hover:stroke-primary hover:cursor-pointer`}
+          className={`relative stroke-white fill-transparent stroke-1 hover:stroke-green-400 hover:cursor-pointer`}
           width="30px"
           height="30px"
           viewBox="0 0 24 24"
@@ -32,7 +71,7 @@ const NoteCard = ({ note, setForm, openForm }) => {
         </svg>
         <svg
           onClick={handleEdit}
-          className={`relative  stroke-white fill-transparent stroke-1 hover:fill-base-100 hover:stroke-primary hover:cursor-pointer`}
+          className={`relative stroke-white fill-transparent stroke-1 hover:stroke-green-400 hover:cursor-pointer`}
           width="32"
           height="32"
           viewBox="0 0 24 24"

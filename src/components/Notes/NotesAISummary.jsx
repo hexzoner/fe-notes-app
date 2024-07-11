@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 
 const chatUrl = `https://gen-ai-wbs-consumer-api.onrender.com/api/v1/chat/completions`;
-const AI_MODE = "development";
+const AI_MODE = "production";
 
 const NotesAISummary = ({ notes }) => {
   const modalRef = useRef();
@@ -15,17 +16,19 @@ const NotesAISummary = ({ notes }) => {
     return { title: x.title, content: x.content };
   });
   const messages = [
-    { role: "system", content: "You are an expert analyst. You send messages formatted in a proper Markdown" },
+    { role: "system", content: "You are an expert analyst." }, // You always provide the answers in the correct JSON format." },
     {
       role: "user",
       content:
-        `Provide a summary of the contents of the notes for each 'Title' 
-      but dont include anything from the initial message. Notes: ` + JSON.stringify(notesPacked),
+        `Analyse the following notes and provide a short summary in the proper Markdown.
+         Dont include any text from the initial notes and instead of saying something about each note, provide a general overview what are the notes about.
+         Notes: ` + JSON.stringify(notesPacked),
     },
   ];
 
   const handleAISummary = async () => {
     // resultsRef.current.innerHtml = "";
+    // let jsonStr =""
     setResults("");
     try {
       if (!stream) setLoading(true);
@@ -40,6 +43,7 @@ const NotesAISummary = ({ notes }) => {
         },
         body: JSON.stringify({
           model: "gpt-4o",
+          // response_format: { type: "json_object" },
           stream: stream,
           messages: messages,
         }),
@@ -56,6 +60,7 @@ const NotesAISummary = ({ notes }) => {
           lines.forEach((line) => {
             if (line.startsWith("data:")) {
               const jsonStr = line.replace("data:", "");
+              // console.log(jsonStr);
               const data = JSON.parse(jsonStr);
               const content = data.choices[0]?.delta?.content;
 
@@ -72,6 +77,8 @@ const NotesAISummary = ({ notes }) => {
       }
     } catch (error) {
       alert(error);
+      console.error("JSON parsing error:", error.message);
+      // console.error("Problematic JSON string:", jsonStr);
     } finally {
       setLoading(false);
       setStreamingAnswer(false);
@@ -91,7 +98,7 @@ const NotesAISummary = ({ notes }) => {
             <span className="loading loading-dots loading-lg absolute top-1/2 right-1/2"></span>
           ) : (
             <>
-              <div className="modal-action items-center justify-between mb-2">
+              <div className="modal-action items-center justify-between mb-2 ">
                 <h1 className="text-2xl text-center">Get AI Gen summary</h1>
                 <label htmlFor="Stream?" className="flex items-center gap-1">
                   Stream?
@@ -102,9 +109,9 @@ const NotesAISummary = ({ notes }) => {
                   <button className="btn btn-sm btn-circle btn-ghost absolute right-6 top-6">✕</button>
                 </form>
               </div>
-              <div className="flex flex-col items-center gap-3">
-                <div className="textarea textarea-success w-full h-[400px] overflow-y-scroll" ref={resultsRef}>
-                  {results === "" ? <p>AI SUMMARY GOES HERE</p> : results}
+              <div className="flex flex-col items-center gap-3 ">
+                <div className="textarea textarea-success rounded-lg w-full h-[400px] overflow-y-scroll" ref={resultsRef}>
+                  {results === "" ? <p>AI SUMMARY GOES HERE</p> : <ReactMarkdown>{results}</ReactMarkdown>}
                 </div>
                 {!streamingAnswer && (
                   <button className="mt-5 btn bg-purple-500 hover:bg-purple-400 text-white" onClick={handleAISummary}>

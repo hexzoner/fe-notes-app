@@ -4,27 +4,24 @@ import DialogModal from "../DialogModal";
 
 const CreateNote = ({ setNotes }) => {
   const modalRef = useRef(null);
-  const [{ title, author, image, content }, setForm] = useState({
+  const emptyForm = {
     title: "",
     author: "",
     image: "",
     content: "",
-  });
+  };
+  const [form, setForm] = useState(emptyForm);
 
   const handleChange = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      if (!author || !image || !content) return alert("Please fill in all fields");
-      const { data } = await axios.post(`${import.meta.env.VITE_NOTES_API}/notes`, {
-        title,
-        author,
-        image,
-        content,
-      });
+      if (!form.author || !form.image || !form.content) return alert("Please fill in all fields");
+      const { data } = await axios.post(`${import.meta.env.VITE_NOTES_API}/notes`, form);
       setNotes((prev) => [data, ...prev]);
-      setForm({ title: "", author: "", image: "", content: "" });
+      // setForm({ title: "", author: "", image: "", content: "" });
+      setForm(emptyForm);
       modalRef.current.close();
     } catch (error) {
       console.error(error);
@@ -38,7 +35,7 @@ const CreateNote = ({ setNotes }) => {
           +
         </button>
       </div>
-      <DialogModal modalRef={modalRef} form={(title, author, image, content)} handleSubmit={handleSubmit} handleChange={handleChange} modalTitle={"Create a new note"} modalButtonName={"Create"} />
+      <DialogModal modalRef={modalRef} form={emptyForm} handleSubmit={handleSubmit} handleChange={handleChange} modalTitle={"Create a new note"} modalButtonName={"Create"} />
       {/* <dialog id="modal-note" className="modal" ref={modalRef}>
         <div className="modal-box h-[500px]">
           <div className="modal-action justify-between mb-2">

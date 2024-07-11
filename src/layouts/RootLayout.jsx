@@ -8,6 +8,7 @@ const RootLayout = () => {
   const [loading, setLoading] = useState(false);
   const [audioRef, setAudioRef] = useState(document.getElementById("audio"));
   const aRef = useRef(null);
+  const [generatingImage, setGeneratingImage] = useState(false);
 
   useEffect(() => {
     if (!audioRef) {
@@ -74,7 +75,7 @@ const RootLayout = () => {
           </div>
         </div>
       </div>
-      <Outlet context={{ audioRef, loading, setLoading }} />
+      <Outlet context={{ audioRef, loading, setLoading, generatingImage, setGeneratingImage }} />
     </>
   );
 };

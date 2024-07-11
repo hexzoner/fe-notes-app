@@ -4,7 +4,7 @@ import DialogModal from "../DialogModal";
 
 const CreateEntry = ({ setEntries }) => {
   const modalRef = useRef(null);
-  const [{ title, author, image, content }, setForm] = useState({
+  const [form, setForm] = useState({
     title: "",
     author: "",
     image: "",
@@ -16,13 +16,8 @@ const CreateEntry = ({ setEntries }) => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      if (!author || !image || !content) return alert("Please fill in all fields");
-      const { data } = await axios.post(`${import.meta.env.VITE_NOTES_API}/entries`, {
-        title,
-        author,
-        image,
-        content,
-      });
+      if (!form.author || !form.image || !form.content) return alert("Please fill in all fields");
+      const { data } = await axios.post(`${import.meta.env.VITE_NOTES_API}/entries`, form);
       setEntries((prev) => [data, ...prev]);
       setForm({ title: "", author: "", image: "", content: "" });
       modalRef.current.close();
@@ -38,7 +33,7 @@ const CreateEntry = ({ setEntries }) => {
           +
         </button>
       </div>
-      <DialogModal modalRef={modalRef} form={(title, author, image, content)} handleSubmit={handleSubmit} handleChange={handleChange} modalTitle={"Create the Note"} modalButtonName={"Create"} />
+      <DialogModal modalRef={modalRef} form={form} handleSubmit={handleSubmit} handleChange={handleChange} modalTitle={"Create the Note"} modalButtonName={"Create"} />
     </>
   );
 };

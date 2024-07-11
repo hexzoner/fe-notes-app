@@ -16,7 +16,7 @@ export default function DialogModal({ modalRef, form, handleSubmit, handleChange
             <input className="grow" placeholder="Author" name="author" value={form.author} onChange={handleChange} />
           </label>
           <label className="input input-bordered flex items-center w-full">
-            <input className="grow" placeholder="Image URL" name="image" value={form.mage} onChange={handleChange} />
+            <input className="grow" placeholder="Image URL" name="image" value={form.image} onChange={handleChange} />
           </label>
           <div className="label w-full">
             <textarea cols={80} rows={10} className="textarea textarea-bordered h-40 resize-none" placeholder="Content" name="content" value={form.content} onChange={handleChange}></textarea>

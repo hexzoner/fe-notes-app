@@ -20,9 +20,11 @@ const MoodAIAnalysis = ({ entries }) => {
       role: "user",
       content:
         `Provide mood and sentiment analysis of the data inside. 
-        Divide your answer in two parts. First part named "summary" is a single string written in proper Markdown with a mood and sentiment summary of each 'Title' dont include anything from the initial message.
-        Second part named "charts" is same mood and sentiment analysis but in the format for Recharts library in React JS.
-        X axis is 'title' and Y axis are 'mood' from worst 0 to best 10 and 'sentiment' from none 0 to max 10` + JSON.stringify(entriesPacked),
+        Divide your answer in two parts. First part named "summary" is a single string written
+        in proper Markdown with a mood and emotions summary of each 'Title' dont include anything from the initial message.
+        Second part named "charts" is same analysis but in the format for Recharts library in React JS:
+        X axis is 'title' and Y axis are 'mood' from (0)worst to 10(best) and 'informative' from 0(on info) to 10(tons of info)
+        "charts" is array of objects {"title", "mood", "informative"}` + JSON.stringify(entriesPacked),
     },
   ];
 
@@ -48,6 +50,7 @@ const MoodAIAnalysis = ({ entries }) => {
       // console.log(data.message.content);
       const parsed = JSON.parse(data.message.content);
       setResults(parsed.summary);
+      console.log(parsed);
       setChartsData(parsed.charts);
     } catch (error) {
       console.log(error);

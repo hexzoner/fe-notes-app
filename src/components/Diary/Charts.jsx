@@ -26,7 +26,7 @@ const Charts = ({ aiSummary }) => {
             <Legend />
             {/* <Bar dataKey="Mood/Sentiment" fill="#82ca9d" /> */}
             <Bar dataKey="mood" name="Mood" fill="#8884d8" />
-            <Bar dataKey="sentiment" name="Sentiment" fill="#ff6b6b" />
+            <Bar dataKey="informative" name="Informative" fill="#ff6b6b" />
           </BarChart>
         </ResponsiveContainer>
       ) : (
