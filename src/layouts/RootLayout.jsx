@@ -58,7 +58,7 @@ const RootLayout = () => {
               <li>
                 <NavLink
                   className={({ isActive }) => `font-bold text-lg p-2 rounded-lg 
-               ${isActive && "underline underline-offset-[24px] decoration-[6px]"}`}
+               ${isActive && "underline underline-offset-[23px] decoration-[6px]"}`}
                   to="/">
                   Diary
                 </NavLink>
@@ -67,7 +67,7 @@ const RootLayout = () => {
                 <NavLink
                   to="/school-notes"
                   className={({ isActive }) => `font-bold text-lg p-2 rounded-lg 
-               ${isActive && "underline underline-offset-[24px] decoration-[6px]"}`}>
+               ${isActive && "underline underline-offset-[23px] decoration-[6px]"}`}>
                   School Notes
                 </NavLink>
               </li>
